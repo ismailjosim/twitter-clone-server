@@ -1,7 +1,8 @@
 import { Application, Request, Response } from 'express'
 
-const cors = require('cors')
-const express = require('express')
+import cors from 'cors'
+import express from 'express'
+import { prisma } from './app/lib/prisma'
 
 const app: Application = express()
 
@@ -15,6 +16,11 @@ app.use(cors())
 // Basic route
 app.get('/', (req: Request, res: Response) => {
 	res.status(200).json({ message: 'Server is up and running 🚀' })
+})
+app.get('/v1/user', async (req: Request, res: Response) => {
+	const user = await prisma.user.findMany()
+
+	res.status(200).json({ success: true, result: user })
 })
 
 export default app
