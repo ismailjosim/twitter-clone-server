@@ -2,7 +2,7 @@ import { Application, Request, Response } from 'express'
 
 import cors from 'cors'
 import express from 'express'
-import { prisma } from './app/lib/prisma'
+import { setupGraphQL } from './app/graphql/server'
 
 const app: Application = express()
 
@@ -17,10 +17,10 @@ app.use(cors())
 app.get('/', (req: Request, res: Response) => {
 	res.status(200).json({ message: 'Server is up and running 🚀' })
 })
-app.get('/v1/user', async (req: Request, res: Response) => {
-	const user = await prisma.user.findMany()
 
-	res.status(200).json({ success: true, result: user })
-})
+const initGraphQL = async () => {
+	await setupGraphQL(app)
+}
+initGraphQL()
 
 export default app
