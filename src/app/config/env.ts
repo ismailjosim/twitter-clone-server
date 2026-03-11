@@ -7,10 +7,11 @@ interface EnvConfig {
 	NODE_ENV: string
 	PORT: string
 	DATABASE_URL: string
+	DIRECT_URL: string
 }
 
 const loadEnvVars = (): EnvConfig => {
-	const requireEnvVars = ['NODE_ENV', 'PORT', 'DATABASE_URL']
+	const requireEnvVars = ['NODE_ENV', 'PORT', 'DATABASE_URL', 'DIRECT_URL']
 
 	requireEnvVars.forEach((variable) => {
 		if (!process.env[variable]) {
@@ -26,6 +27,7 @@ const loadEnvVars = (): EnvConfig => {
 		NODE_ENV: process.env.NODE_ENV as string,
 		PORT: process.env.PORT as string,
 		DATABASE_URL: process.env.DATABASE_URL as string,
+		DIRECT_URL: process.env.DIRECT_URL as string,
 	}
 }
 export const envVars = loadEnvVars()

@@ -2,7 +2,7 @@ import { Application, Request, Response } from 'express'
 
 import cors from 'cors'
 import express from 'express'
-import { setupGraphQL } from './app/graphql/server'
+// import { setupGraphQL } from './app/graphql/server'
 
 const app: Application = express()
 
@@ -18,9 +18,9 @@ app.get('/', (req: Request, res: Response) => {
 	res.status(200).json({ message: 'Server is up and running 🚀' })
 })
 
-const initGraphQL = async () => {
-	await setupGraphQL(app)
-}
-initGraphQL()
+// const initGraphQL = async () => {
+// 	await setupGraphQL(app)
+// }
+// initGraphQL()
 
 export default app
