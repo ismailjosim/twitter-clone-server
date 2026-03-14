@@ -23,7 +23,4 @@ app.get('/', (req: Request, res: Response) => {
 	res.status(200).json({ message: 'Server is up and running 🚀' })
 })
 
-// NOTE: GraphQL middleware (/graphql) is mounted in server.ts
-// after Apollo Server has started, because server.start() is async.
-
 export default app

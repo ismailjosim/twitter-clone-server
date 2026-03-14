@@ -9,6 +9,10 @@ interface EnvConfig {
 	DATABASE_URL: string
 	DIRECT_URL: string
 	ALLOWED_ORIGINS: string
+	ACCESS_TOKEN_SECRET: string
+	ACCESS_TOKEN_EXPIRES: string
+	REFRESH_TOKEN_SECRET: string
+	REFRESH_TOKEN_EXPIRES: string
 }
 
 const loadEnvVars = (): EnvConfig => {
@@ -18,6 +22,10 @@ const loadEnvVars = (): EnvConfig => {
 		'DATABASE_URL',
 		'DIRECT_URL',
 		'ALLOWED_ORIGINS',
+		'ACCESS_TOKEN_SECRET',
+		'ACCESS_TOKEN_EXPIRES',
+		'REFRESH_TOKEN_SECRET',
+		'REFRESH_TOKEN_EXPIRES',
 	]
 
 	requireEnvVars.forEach((variable) => {
@@ -36,6 +44,10 @@ const loadEnvVars = (): EnvConfig => {
 		DATABASE_URL: process.env.DATABASE_URL as string,
 		DIRECT_URL: process.env.DIRECT_URL as string,
 		ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS as string,
+		ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET as string,
+		ACCESS_TOKEN_EXPIRES: process.env.ACCESS_TOKEN_EXPIRES as string,
+		REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET as string,
+		REFRESH_TOKEN_EXPIRES: process.env.REFRESH_TOKEN_EXPIRES as string,
 	}
 }
 export const envVars = loadEnvVars()

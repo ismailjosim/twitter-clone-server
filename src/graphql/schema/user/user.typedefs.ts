@@ -1,20 +1,26 @@
 export const UserTypeDefs = `#graphql
 
-type User {
-    id: ID!
-    email: String!
-    name: String!
-    phone: String
-    profileImage: String
+    type AuthPayload {
+        accessToken: String!
+        refreshToken: String!
+        user: User!
+    }
+
+    type User {
+        id: ID!
+        email: String!
+        name: String!
+        phone: String
+        profileImage: String
     }
 
     type Query {
         users: [User!]!
-        user(id:ID!): User
+        user(id: ID!): User
+        verifyGoogleToken(token: String!): AuthPayload
     }
 
     type Mutation {
-        createUser(email:String!, name:String!,phone:String, profileImage: String): User!
+        createUser(email: String!, name: String!, phone: String, profileImage: String): User!
     }
-
 `
