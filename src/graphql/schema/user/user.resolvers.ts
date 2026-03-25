@@ -1,68 +1,75 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import axios from 'axios'
-import { GraphQLContext } from '../../context'
+
 import AppError from '../../../app/errorHelpers/AppError'
 import StatusCode from '../../../app/utils/statusCode'
 import { createUserToken } from '../../../app/utils/userToken'
-
-interface IGoogleResponse {
-	name: string
-	email: string
-
-	sub?: string
-	picture?: string
-	given_name?: string
-	email_verified: boolean
-}
+import { GraphQLContext } from '../../../app/types/types'
+import { IGoogleUserInfo } from '../../../app/interfaces'
 
 export const userResolvers = {
 	Query: {
 		users: (_: unknown, __: unknown, ctx: GraphQLContext) =>
 			ctx.prisma.user.findMany(),
-		user: (_: unknown, { id }: { id: number }, ctx: GraphQLContext) =>
-			ctx.prisma.user.findUnique({
-				where: { id },
-				// includes code goes here
-			}),
+
+		me: async (_: unknown, __: unknown, ctx: GraphQLContext) => {
+			if (!ctx.userId) {
+				throw new AppError(StatusCode.UNAUTHORIZED, 'You are not authorized')
+			}
+
+			return ctx.prisma.user.findUnique({
+				where: { id: ctx.userId },
+			})
+		},
+	},
+
+	Mutation: {
+		// createUser: (
+		// 	_: unknown,
+		// 	args: {
+		// 		email: string
+		// 		name: string
+		// 		phone?: string
+		// 		profileImage?: string
+		// 	},
+		// 	ctx: GraphQLContext,
+		// ) => ctx.prisma.user.create({ data: args }),
+
 		verifyGoogleToken: async (
 			_: unknown,
 			{ token }: { token: string },
 			ctx: GraphQLContext,
 		) => {
-			let googleUser: IGoogleResponse
-
-			// 1. Verify token with Google
+			// step 1. Verify token with Google
+			let googleUser: IGoogleUserInfo
 			try {
-				const { data } = await axios.get<IGoogleResponse>(
+				const { data } = await axios.get<IGoogleUserInfo>(
 					'https://www.googleapis.com/oauth2/v3/userinfo',
 					{
 						headers: { Authorization: `Bearer ${token}` },
 					},
 				)
 				googleUser = data
-			} catch (error) {
-				throw new AppError(StatusCode.UNAUTHORIZED, 'Invalid Google Token')
+			} catch {
+				throw new AppError(StatusCode.UNAUTHORIZED, 'Invalid Google token')
 			}
 
-			// 2. Find or Create User (Optimized approach)
-			let user = await ctx.prisma.user.findUnique({
+			// step 2. Upsert user — creates if not exists, updates profile image if changed
+			const user = await ctx.prisma.user.upsert({
 				where: { email: googleUser.email },
+				update: {
+					profileImage: googleUser.picture,
+				},
+				create: {
+					email: googleUser.email,
+					name: googleUser.name,
+					profileImage: googleUser.picture,
+				},
 			})
-
-			if (!user) {
-				user = await ctx.prisma.user.create({
-					data: {
-						email: googleUser.email,
-						name: googleUser.name,
-						profileImage: googleUser.picture,
-					},
-				})
-			}
 
 			// 3. Generate tokens
 			const { accessToken, refreshToken } = createUserToken({
-				email: user.email,
 				id: user.id,
+				email: user.email,
 			})
 
 			return {
@@ -71,17 +78,5 @@ export const userResolvers = {
 				user,
 			}
 		},
-	},
-	Mutation: {
-		createUser: (
-			_: unknown,
-			args: {
-				email: string
-				name: string
-				phone?: string
-				profileImage?: string
-			},
-			ctx: GraphQLContext,
-		) => ctx.prisma.user.create({ data: args }),
 	},
 }

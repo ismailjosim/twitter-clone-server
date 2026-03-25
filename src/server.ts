@@ -7,8 +7,9 @@ import cors from 'cors'
 import app from './app'
 
 import { schema } from './graphql/schema'
-import { createContext, GraphQLContext } from './graphql/context'
+import { createContext } from './graphql/context'
 import { envVars } from './app/config/env'
+import { GraphQLContext } from './app/types/types'
 
 const bootstrap = async () => {
 	try {

@@ -17,10 +17,11 @@ export const UserTypeDefs = `#graphql
     type Query {
         users: [User!]!
         user(id: ID!): User
-        verifyGoogleToken(token: String!): AuthPayload
+        me: User
     }
 
     type Mutation {
         createUser(email: String!, name: String!, phone: String, profileImage: String): User!
+        verifyGoogleToken(token: String!): AuthPayload
     }
 `
