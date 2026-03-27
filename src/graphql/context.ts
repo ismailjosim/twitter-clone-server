@@ -12,7 +12,7 @@ export async function createContext({
 	req: Request
 }): Promise<GraphQLContext> {
 	const authHeader = req.headers.authorization
-	console.log(authHeader)
+	// console.log({ authHeader })
 	const token = authHeader?.startsWith('Bearer ') && authHeader.split(' ')[1]
 
 	if (!token) {
@@ -23,6 +23,6 @@ export async function createContext({
 
 	return {
 		prisma,
-		userId: payload.id,
+		userId: payload.userId,
 	}
 }

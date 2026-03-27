@@ -11,14 +11,20 @@ export const userResolvers = {
 		users: (_: unknown, __: unknown, ctx: GraphQLContext) =>
 			ctx.prisma.user.findMany(),
 
-		me: async (_: unknown, __: unknown, ctx: GraphQLContext) => {
+		getCurrentUser: async (_: unknown, __: unknown, ctx: GraphQLContext) => {
 			if (!ctx.userId) {
 				throw new AppError(StatusCode.UNAUTHORIZED, 'You are not authorized')
 			}
 
-			return ctx.prisma.user.findUnique({
-				where: { id: ctx.userId },
+			const user = await ctx.prisma.user.findUnique({
+				where: { id: ctx.userId, isDeleted: false }, // only active user
 			})
+
+			if (!user) {
+				throw new AppError(StatusCode.NOT_FOUND, 'User not found')
+			}
+
+			return user
 		},
 	},
 
